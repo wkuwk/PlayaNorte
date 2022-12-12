@@ -52,8 +52,8 @@ df['start'] = pd.to_datetime(df['start'], format="%Y-%m-%d")
 df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d")
 filter_df = df[df['site'].str.contains(
     site_type)].sort_values('site', ascending=False)
-filter_df = filter_df[filter_df.start.dt.date >= s_date]
-filter_df = filter_df[filter_df.end.dt.date <= e_date]
+filter_df = filter_df[filter_df.start.dt.date <= e_date]
+filter_df = filter_df[filter_df.end.dt.date >= s_date]
 fig = px.timeline(filter_df,
                   x_start="start", x_end="end", y="site")
 st.plotly_chart(fig)
