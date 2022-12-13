@@ -39,7 +39,7 @@ with st.form("New Reservation", clear_on_submit=True):
         "Sekect End Date", dt.datetime.now() + dt.timedelta(7))
     name = col12.text_input("Input Name")
     site = col12.selectbox("Select Site", all_sites)
-    submitted = col11.form_submit_button("Verify")
+    submitted = st.form_submit_button("Verify")
     if submitted:
         st.session_state['pending_submission'] = True
 

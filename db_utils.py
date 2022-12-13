@@ -95,8 +95,8 @@ def validate_reservation_is_possible(db, site: str, reservation: dict) -> bool:
     end = list(reservation.values())[0]["end"]
     for iter_start, vals in reservations.items():
         iter_end = vals["end"]
-        cond1 = iter_end <= end and iter_end >= start
-        cond2 = iter_start <= end and iter_start >= start
+        cond1 = start >= iter_start and start <= iter_end
+        cond2 = end >= iter_start and end <= iter_end 
         if cond1 or cond2:
             return False
     return True
