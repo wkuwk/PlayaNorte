@@ -16,21 +16,23 @@ with st.expander("Campground Plan"):
     st.image("campground.png")
 
 st.subheader("View Reservations")
-_, col11, _, col12, _ = st.columns((1, 4, 1, 10, 1))
+_, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
 s_date = col11.date_input(
     "Select Start Date", dt.datetime.now())
 e_date = col11.date_input(
-    "Sekect End Date", dt.datetime.now() + dt.timedelta(days=7))
+    "Select End Date", dt.datetime.now() + dt.timedelta(days=7))
 site_type = col12.selectbox(
     "Select Site Type", ["A", "B", "C", "D", "E"])
 site_type_clean = site_type[0]
+refresh = col12.button("Refresh")
 
+if "db" not in st.session_state.keys():
+    db = connect_to_firebase_db_and_authenticate()
+    st.session_state['db'] = db
 
-db = connect_to_firebase_db_and_authenticate()
-st.session_state['db'] = db
-
-with st.spinner("Loading database ..."):
-    st.session_state['all_reservations'] = get_all_reservations(db)
+if "all_reservations" not in st.session_state.keys() or refresh:
+    with st.spinner("Loading database ..."):
+        st.session_state['all_reservations'] = get_all_reservations(db)
 
 reservations_df_list = []
 for site, reservations in st.session_state['all_reservations'].items():
@@ -56,4 +58,5 @@ filter_df = filter_df[filter_df.start.dt.date <= e_date]
 filter_df = filter_df[filter_df.end.dt.date >= s_date]
 fig = px.timeline(filter_df,
                   x_start="start", x_end="end", y="site")
+fig.update_layout({"xaxis":dict(range=[s_date,e_date])})
 st.plotly_chart(fig)
