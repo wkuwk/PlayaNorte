@@ -16,7 +16,7 @@ st.subheader("View Reservations")
 _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
 s_date = col11.date_input("Select Start Date", dt.datetime.now())
 e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(days=7))
-site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E"])
+site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E", "F"])
 site_type_clean = site_type[0]
 refresh = col12.button("Refresh")
 
