@@ -1,8 +1,10 @@
 import streamlit as st
 import datetime as dt
 import time
+import plotly.express as px
 from db_manager import DBManager 
 from utils import get_reservable_sites
+import pandas as pd 
 
 if "db" not in st.session_state.keys():
     db = DBManager()
@@ -45,13 +47,41 @@ if st.session_state['authenticated']:
     for v in sites.values():
         all_sites += list(v)
 
+    st.subheader("Current Reservations")
+    _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
+    s_date = col11.date_input("Select Start Date", dt.datetime.now())
+    e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(days=365))
+    site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E", "F"])
+    site_type_clean = site_type[0]
+
+    reservations_df_list = []
+    for site, reservations in st.session_state["all_reservations"].items():
+        if reservations:
+            for start, reservation in reservations.items():
+                reservations_df_list.append(
+                    dict(start=start, end=reservation["end"], site=site, name=reservation["name"])
+                )
+        else:
+            reservations_df_list.append(dict(start=s_date, end=s_date, site=site, name=None))
+    st.session_state["reservation_df"] = pd.DataFrame(reservations_df_list)
+
+    df = st.session_state["reservation_df"]
+    df["start"] = pd.to_datetime(df["start"], format="%Y-%m-%d")
+    df["end"] = pd.to_datetime(df["end"], format="%Y-%m-%d")
+    filter_df = df[df["site"].str.contains(site_type)].sort_values("site", ascending=False)
+    #filter_df = filter_df[filter_df.start.dt.date <= e_date]
+    #filter_df = filter_df[filter_df.end.dt.date >= s_date]
+    fig = px.timeline(filter_df, x_start="start", x_end="end", y="site", hover_name="name")
+    fig.update_layout({"xaxis": dict(range=[s_date, e_date])})
+    st.plotly_chart(fig)
+
     st.subheader("Create New Reservation")
     with st.form("New Reservation", clear_on_submit=True):
         _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 2))
         s_date = col11.date_input(
             "Select Start Date", dt.datetime.now())
         e_date = col11.date_input(
-            "Sekect End Date", dt.datetime.now() + dt.timedelta(7))
+            "Select End Date", dt.datetime.now() + dt.timedelta(7))
         name = col12.text_input("Input Name")
         site = col12.selectbox("Select Site", all_sites)
         submitted = st.form_submit_button("Verify")

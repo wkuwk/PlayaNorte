@@ -51,7 +51,6 @@ e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(da
 site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E", "F"])
 site_type_clean = site_type[0]
 
-
 reservations_df_list = []
 for site, reservations in st.session_state["all_reservations"].items():
     if reservations:
@@ -60,17 +59,16 @@ for site, reservations in st.session_state["all_reservations"].items():
                 dict(start=start, end=reservation["end"], site=site)
             )
     else:
-        reservations_df_list.append(dict(start=s_date, end=s_date, site=site))
+        reservations_df_list.append(dict(start=s_date, end=s_date, site=site, name=None))
 
 st.session_state["reservation_df"] = pd.DataFrame(reservations_df_list)
-
 
 df = st.session_state["reservation_df"]
 df["start"] = pd.to_datetime(df["start"], format="%Y-%m-%d")
 df["end"] = pd.to_datetime(df["end"], format="%Y-%m-%d")
 filter_df = df[df["site"].str.contains(site_type)].sort_values("site", ascending=False)
-filter_df = filter_df[filter_df.start.dt.date <= e_date]
-filter_df = filter_df[filter_df.end.dt.date >= s_date]
+#filter_df = filter_df[filter_df.start.dt.date <= e_date]
+#filter_df = filter_df[filter_df.end.dt.date >= s_date]
 fig = px.timeline(filter_df, x_start="start", x_end="end", y="site")
 fig.update_layout({"xaxis": dict(range=[s_date, e_date])})
 st.plotly_chart(fig)
