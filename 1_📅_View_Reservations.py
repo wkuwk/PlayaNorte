@@ -64,8 +64,12 @@ for site, reservations in st.session_state["all_reservations"].items():
 st.session_state["reservation_df"] = pd.DataFrame(reservations_df_list)
 
 df = st.session_state["reservation_df"]
-df["start"] = pd.to_datetime(df["start"], format="%Y-%m-%d")
-df["end"] = pd.to_datetime(df["end"], format="%Y-%m-%d")
+#df["start"] = pd.to_datetime(df["start"], format="%Y-%m-%d")
+#df["end"] = pd.to_datetime(df["end"], format="%Y-%m-%d")
+
+df["start"] = pd.to_datetime(df["start"], format="%Y-%m-%d").dt.strftime('%Y-%m-%d')
+df["end"] = pd.to_datetime(df["end"], format="%Y-%m-%d").dt.strftime('%Y-%m-%d')
+
 filter_df = df[df["site"].str.contains(site_type)].sort_values("site", ascending=False)
 #filter_df = filter_df[filter_df.start.dt.date <= e_date]
 #filter_df = filter_df[filter_df.end.dt.date >= s_date]
