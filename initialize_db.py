@@ -9,6 +9,11 @@ for v in sites.values():
 db = connect_to_firebase_db_and_authenticate()
 reservation = {}
 
-for site in all_sites:
+f_sites = sites["F sites"]
+
+# DANGER
+"""
+for site in f_sites:
     doc_ref = db.collection("sites").document(site)
     doc_ref.set(reservation)
+"""

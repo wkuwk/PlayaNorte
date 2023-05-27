@@ -2,7 +2,8 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import json
 import os
-import streamlit as st 
+import streamlit as st
+
 
 def get_all_reservations(db) -> dict:
     """Returns the reservations for all sites in the database.
@@ -33,12 +34,13 @@ def get_reservations_for_site(db, site: str) -> dict:
         site (str): String of the site to remove the reservation from.
 
     Returns:
-        reservation: Site reservations, as a dictionary. 
+        reservation: Site reservations, as a dictionary.
     """
     doc_ref = db.collection("sites").document(site)
     doc = doc_ref.get()  # Get data for document
 
     return doc.to_dict()
+
 
 def cancel_reservation(db, site: str, reservation_key: str) -> bool:
     """Deletes a specific reservation.
@@ -61,6 +63,7 @@ def cancel_reservation(db, site: str, reservation_key: str) -> bool:
     except:
         return False
 
+
 def add_reservation_to_site(db, site: str, reservation: dict) -> bool:
     """Adds a reservation to a specific site's database.
 
@@ -79,6 +82,7 @@ def add_reservation_to_site(db, site: str, reservation: dict) -> bool:
     except:
         return False
 
+
 def validate_reservation_is_possible(db, site: str, reservation: dict) -> bool:
     """Verifies if a given reservation is possible and not overlapping with existing ones.
 
@@ -96,13 +100,15 @@ def validate_reservation_is_possible(db, site: str, reservation: dict) -> bool:
     for iter_start, vals in reservations.items():
         iter_end = vals["end"]
         cond1 = start >= iter_start and start <= iter_end
-        cond2 = end >= iter_start and end <= iter_end 
+        cond2 = end >= iter_start and end <= iter_end
         if cond1 or cond2:
             return False
     return True
 
 
-def connect_to_firebase_db_and_authenticate(project_name: str = None, local_auth_file: str = "firestore-key.json"):
+def connect_to_firebase_db_and_authenticate(
+    project_name: str = None, local_auth_file: str = "firestore-key.json"
+):
     """Connects to a firebase project using a local authentication file, or using a streamlit toml secrets file.
 
     Args:
