@@ -48,6 +48,7 @@ if st.session_state['authenticated']:
         all_sites += list(v)
 
     st.subheader("Current Reservations")
+    st.info("Blue bars represent occupied periods.")
     _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
     s_date = col11.date_input("Select Start Date", dt.datetime.now())
     e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(days=365))
@@ -73,6 +74,8 @@ if st.session_state['authenticated']:
     #filter_df = filter_df[filter_df.end.dt.date >= s_date]
     fig = px.timeline(filter_df, x_start="start", x_end="end", y="site", hover_name="name")
     fig.update_layout({"xaxis": dict(range=[s_date, e_date])})
+    fig.layout.xaxis.fixedrange = True
+    fig.layout.yaxis.fixedrange = True
     st.plotly_chart(fig)
 
     st.subheader("Create New Reservation")

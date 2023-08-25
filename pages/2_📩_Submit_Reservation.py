@@ -37,7 +37,7 @@ if "all_reservations" not in st.session_state.keys() or refresh:
 
 _, img_col, _ = st.columns((1, 2, 1))
 st.header("📩 Submit Reservation")
-st.info("This section is still under development.")
+st.warning("This section is still under development, and not functional.")
 img_col.image("playa_norte.png")
 
 with st.expander("Campground Plan"):
