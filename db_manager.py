@@ -36,11 +36,32 @@ class DBManager:
     def get_all_reservations(self) -> dict:
         return self._get_all_objects_in_collection("sites")
 
+    def get_all_daily_prices(self) -> dict:
+        all_prices = self._get_all_objects_in_collection("prices")
+        return all_prices['daily_prices']
+    
+    def get_all_monthly_prices(self) -> dict:
+        all_prices = self._get_all_objects_in_collection("prices")
+        return all_prices['monthly_prices']
+
     def get_sites_list(self) -> list:
         return self._get_all_object_ids_in_collection("sites")
 
     def get_reservations_for_site(self, site_name: str) -> dict:
         return self._get_object_in_collection("sites", site_name)
+
+    def update_sites_daily_prices(self, prices_dict:dict):
+        return self._update_object_in_collection(
+            collection_name="prices",
+            object_name="daily_prices",
+            new_data=prices_dict
+        )
+    def update_sites_monthly_prices(self, prices_dict:dict):
+        return self._update_object_in_collection(
+            collection_name="prices",
+            object_name="monthly_prices",
+            new_data=prices_dict
+        )
 
     def add_reservation_to_site(self, site_name: str, reservation_data: dict):
         return self._update_object_in_collection(

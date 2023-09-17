@@ -43,6 +43,9 @@ img_col.image("playa_norte.png")
 with st.expander("Campground Plan"):
     st.image("campground.png")
 
+daily_prices_dict = st.session_state["db"].get_all_daily_prices()
+monthly_prices_dict = st.session_state["db"].get_all_monthly_prices()
+
 st.subheader("Reservation Details")
 _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
 s_date = col11.date_input("Select Start Date", dt.datetime.now())
@@ -50,8 +53,9 @@ e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(da
 site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E", "F"])
 with col12:
     st.write("✅ Site available.")
-    st.write(f"Total price: ", 825, "USD.")
-    st.write(f"Required deposit: ", 400, "USD.")
+    st.write(f"Daily price: ", daily_prices_dict[site_type], "Pesos.")
+    st.write(f"Monthly price: ", monthly_prices_dict[site_type], "Pesos.")
+    #st.write(f"Required deposit: ", 400, "USD.")
 site_type_clean = site_type[0]
 
 _, col21 = st.columns((1, 16))
