@@ -56,7 +56,9 @@ if st.session_state["authenticated"]:
     e_date = col11.date_input(
         "Select End Date", dt.datetime.now() + dt.timedelta(days=365)
     )
-    site_type = col12.selectbox("Select Site Type", ["A", "B", "C", "D", "E", "F"])
+    site_type = col12.selectbox(
+        "Select Site Type", ["A", "B", "C", "D", "E", "F", "Others"]
+    )
     site_type_clean = site_type[0]
 
     reservations_df_list = []
