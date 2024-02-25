@@ -88,6 +88,10 @@ if st.session_state["authenticated"]:
                         name=reservation["name"],
                     )
                 )
+                if "color" in reservation.keys():
+                    reservations_df_list[-1]["color"] = reservation["color"]
+                else:
+                    reservations_df_list[-1]["color"] = "blue"
         else:
             reservations_df_list.append(
                 dict(start=s_date, end=s_date, site=site, name=None)
@@ -100,14 +104,32 @@ if st.session_state["authenticated"]:
     filter_df = df[df["site"].str.contains(site_type)].sort_values(
         "site", ascending=False
     )
+
+    color_discrete_map = {
+        "blue": "blue",
+        "red": "red",
+        "green": "green",
+        "yellow": "yellow",
+        "orange": "orange",
+    }
+
     # filter_df = filter_df[filter_df.start.dt.date <= e_date]
     # filter_df = filter_df[filter_df.end.dt.date >= s_date]
     fig = px.timeline(
-        filter_df, x_start="start", x_end="end", y="site", hover_name="name"
+        filter_df,
+        x_start="start",
+        x_end="end",
+        y="site",
+        hover_name="name",
+        color="color",
+        color_discrete_map=color_discrete_map,  # Use the discrete color map
     )
     fig.update_layout({"xaxis": dict(range=[s_date, e_date])})
     fig.layout.xaxis.fixedrange = True
     fig.layout.yaxis.fixedrange = True
+    # Hide the legend
+    fig.update_layout(showlegend=False)
+
     st.plotly_chart(fig)
 
     st.divider()
@@ -131,13 +153,17 @@ if st.session_state["authenticated"]:
     st.divider()
     st.subheader("Create New Reservation")
     with st.form("New Reservation", clear_on_submit=True):
-        _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 2))
-        s_date = col11.date_input("Select Start Date", dt.datetime.now())
-        e_date = col11.date_input(
+        _, col11, col12, col13 = st.columns((1, 8, 6, 6))
+        s_date = col12.date_input("Select Start Date", dt.datetime.now())
+        e_date = col13.date_input(
             "Select End Date", dt.datetime.now() + dt.timedelta(7)
         )
-        name = col12.text_input("Input Name")
-        site = col12.selectbox("Select Site", all_sites)
+        site = col11.selectbox("Select Site", all_sites)
+        _, col111, col112 = st.columns((1, 10, 10))
+        name = col111.text_input("Input Name")
+        color = col112.selectbox(
+            "Select color", ["blue", "green", "orange", "red", "yellow"]
+        )
         submitted = st.form_submit_button("Verify")
         if submitted:
             st.session_state["pending_submission"] = True
@@ -152,6 +178,7 @@ if st.session_state["authenticated"]:
                 "start": s_date.strftime("%Y-%m-%d"),
                 "end": e_date.strftime("%Y-%m-%d"),
                 "duration": (e_date - s_date).days,
+                "color": color,
             }
         }
         db = st.session_state["db"]
