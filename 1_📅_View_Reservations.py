@@ -52,8 +52,10 @@ _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
 s_date = col11.date_input("Select Start Date", dt.datetime.now())
 e_date = col11.date_input("Select End Date", dt.datetime.now() + dt.timedelta(days=365))
 site_type = col12.selectbox(
-    "Select Site Type", ["A", "B", "C", "D", "E", "F", "Others"]
+    "Select Site Type", ["A", "B", "C", "D", "E", "F", "Others (Casitas)"]
 )
+if site_type == "Others (Casitas)":
+    site_type = "Others"
 site_type_clean = site_type[0]
 
 reservations_df_list = []
