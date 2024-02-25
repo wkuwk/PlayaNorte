@@ -49,6 +49,21 @@ if st.session_state["authenticated"]:
     for v in sites.values():
         all_sites += list(v)
 
+    # CREATE USER DICT TO FILTER BY NAME
+    user_dict = {}
+    for site, reservations in st.session_state["all_reservations"].items():
+        for reservation_details in reservations.values():
+            name = reservation_details["name"].lower()
+
+            # Add name key if not present
+            if name not in user_dict.keys():
+                user_dict[name] = []
+
+            # Add reservation details to list
+            user_dict[name].append(
+                (site, reservation_details["start"], reservation_details["end"])
+            )
+
     st.subheader("Current Reservations")
     st.info("Blue bars represent occupied periods.")
     _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 1))
@@ -95,6 +110,25 @@ if st.session_state["authenticated"]:
     fig.layout.yaxis.fixedrange = True
     st.plotly_chart(fig)
 
+    st.divider()
+    st.subheader("Find Reservation by Name")
+    # Order user_dict keys by alphabetical order
+    user_keys_ordered = sorted(user_dict.keys())
+    filter_name_col, _ = st.columns(2)
+    user = filter_name_col.selectbox("Select User", user_keys_ordered)
+    for reservation_details in user_dict[user]:
+        st.write(
+            "User",
+            user,
+            "has a reservation at site",
+            reservation_details[0],
+            "from",
+            reservation_details[1],
+            "to",
+            reservation_details[2],
+        )
+
+    st.divider()
     st.subheader("Create New Reservation")
     with st.form("New Reservation", clear_on_submit=True):
         _, col11, _, col12, _ = st.columns((1, 4, 1, 8, 2))
@@ -165,8 +199,11 @@ if st.session_state["authenticated"]:
                 elif not site_available:
                     st.write("❌ Invalid dates, this site is already busy.")
                 elif e_date <= s_date:
-                    st.write("❌ Invalid dates, end date must be later than start date.")
+                    st.write(
+                        "❌ Invalid dates, end date must be later than start date."
+                    )
 
+    st.divider()
     st.subheader("Cancel Reservation")
     _, col21, _ = st.columns((1, 12, 2))
 
@@ -200,6 +237,7 @@ if st.session_state["authenticated"]:
                 ].get_all_reservations()
                 st.experimental_rerun()
 
+    st.divider()
     st.subheader("Modify Site Prices")
     daily_prices_dict = st.session_state["db"].get_all_daily_prices()
     monthly_prices_dict = st.session_state["db"].get_all_monthly_prices()
